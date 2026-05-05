@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iMatrice Platinum - Espace d'Entraînement</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <style>
+        :root {
+            --primary: #4338ca; 
+            --dark: #0f172a; 
+            --bg: #f1f5f9; 
+            --border: #e2e8f0;
+            --success: #059669; 
+            --danger: #dc2626; 
+        }
+        body {
+            background: var(--bg); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex;
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden; 
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 320px; 
+            background: var(--dark); 
+            color: white; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            overflow-y: auto; 
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+        .nav-btn {
+            background: #1e293b; 
+            color: #cbd5e1; 
+            border: 1px solid #334155; 
+            padding: 12px;
+            margin-bottom: 8px; 
+            cursor: pointer; 
+            border-radius: 8px; 
+            text-align: left;
+            font-size: 0.9rem; 
+            transition: all 0.2s; 
+        }
+        .nav-btn:hover { background: var(--primary); color: white; transform: translateX(5px); }
+        
+        .panel-title {
+            font-size: 0.7rem; 
+            text-transform: uppercase; 
+            color: #94a3b8; 
+            margin: 20px 0 10px; 
+            font-weight: 800; 
+            letter-spacing: 1.2px; 
+        }
+        #rappels-box {
+            background: #1e293b; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-size: 0.85rem;
+            border-left: 4px solid var(--primary); 
+            color: #e2e8f0; 
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        #brouillon {
+            width: 100%; 
+            height: 120px; 
+            background: #fffbeb; 
+            border: 1px dashed #f59e0b;
+            border-radius: 8px; 
+            padding: 10px; 
+            font-size: 0.85rem; 
+            resize: none; 
+            color: #92400e; 
+            box-sizing: border-box; 
+            margin-bottom: 20px; 
+        }
+        
+        .send-btn {
+            background: var(--success); 
+            color: white; 
+            border: none; 
+            padding: 14px;
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: 0.3s; 
+            text-align: center; 
+            margin-top: auto; 
+        }
+        .send-btn:hover { background: #047857; filter: brightness(1.1); }
+
+        /* Main Viewport */
+        .viewport {
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            background: white; 
+            margin: 15px;
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        header {
+            padding: 15px 25px; 
+            border-bottom: 1px solid var(--border); 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center; 
+            background: white; 
+        }
+        
+        #chat-flow {
+            flex: 1; 
+            padding: 25px; 
+            overflow-y: auto; 
+            background: #f8fafc; 
+            display: flex;
+            flex-direction: column; 
+            gap: 15px; 
+        }
+        .bubble {
+            max-width: 80%; 
+            padding: 14px 18px; 
+            border-radius: 15px; 
+            font-size: 1rem;
+            line-height: 1.6; 
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .bot { background: white; border: 1px solid var(--border); align-self: flex-start; box-shadow: 0 2px 5px rgba(0,0,0,0.03); color: #1e293b; }
+        .user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        
+        .math-display { 
+            font-size: 1.2rem; 
+            margin: 10px 0; 
+            padding: 20px; 
+            text-align: center;
+            background: #f1f5f9; 
+            border-radius: 10px; 
+            border: 1px solid var(--border);
+        }
+        
+        .input-bar {
+            padding: 20px; 
+            background: white; 
+            border-top: 1px solid var(--border); 
+            display: flex; 
+            gap: 12px; 
+        }
+        #ui { 
+            flex: 1;
+            padding: 14px; 
+            border: 2px solid var(--border); 
+            border-radius: 10px; 
+            font-size: 1rem; 
+            outline: none; 
+            transition: 0.2s;
+        }
+        #ui:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1); }
+        
+        .lvl-btn {
+            background: #e2e8f0; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 8px;
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 0.85rem; 
+            transition: 0.2s;
+        }
+        .lvl-btn:hover { background: var(--primary); color: white; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <h2 style="font-size: 1.4rem; margin-bottom: 5px; color: #fff;">iMatrice <span style="color:#818cf8">Platinum</span></h2>
+        <div id="infoUser" style="font-size:0.85rem; color:#94a3b8; margin-bottom:20px; padding-bottom:10px; border-bottom:1px solid #334155;"></div>
+        
+        <div class="panel-title">Modules Mathématiques</div>
+        <button class="nav-btn" onclick="setModule('suites', '🔢 Suites Numériques')">🔢 Suites Numériques</button>
+        <button class="nav-btn" onclick="setModule('limites', '📉 Limites de fonctions')">📉 Limites de fonctions</button>
+        <button class="nav-btn" onclick="setModule('derivation', '✍️ Dérivation')">✍️ Dérivation</button>
+        <button class="nav-btn" onclick="setModule('fonctions', '📊 Étude de Fonctions')">📊 Étude de Fonctions</button>
+        
+        <div class="panel-title">Indice / Rappel</div>
+        <div id="rappels-box">Sélectionnez un module pour commencer l'entraînement.</div>
+
+        <div class="panel-title">Zone de Brouillon</div>
+        <textarea id="brouillon" placeholder="Utilise cet espace pour tes calculs intermédiaires..."></textarea>
+
+        <button class="send-btn" onclick="sendReportManual()">📊 Synchroniser mon Score</button>
+    </aside>
+
+    <main class="viewport">
+        <header>
+            <div id="current-mod" style="font-weight:bold; font-size: 1.1rem; color: var(--dark);">Prêt pour l'entraînement ?</div>
+            <div id="lvl-picker" style="display:none; gap:10px;">
+                <button class="lvl-btn" onclick="startLevel(1)">Niveau 1</button>
+                <button class="lvl-btn" onclick="startLevel(2)">Niveau 2</button>
+                <button class="lvl-btn" onclick="startLevel(3)">Niveau 3</button>
+            </div>
+            <div style="font-weight:bold; background: #eef2ff; padding: 8px 15px; border-radius: 20px;">Score: <span id="xp" style="color:var(--primary)">0</span> XP</div>
+        </header>
+
+        <div id="chat-flow"></div>
+
+        <div class="input-bar">
+            <input type="text" id="ui" placeholder="Saisis ta réponse ici..." autocomplete="off">
+        </div>
+    </main>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmbUOQjUPMW-kEkyi_B35WM9tF-ihE7o1630sTBe2wR0imY7Nfky8SzYJ1jw7Xl_7uPA/exec";
+        
+        let identity = { nom: "", prenom: "", classe: "" };
+        let score = 0, currentModKey = '', currentQ = null, queue = [];
+
+        const exoData = {
+            suites: [
+                {lvl:1,q:"\\text{Soit une suite arithmétique } (U_n) \\text{ avec } U_0=2, r=3. \\text{ Calculer } U_5.",sol:"17",rule:"U_n = U_0 + n×r"},
+                {lvl:1,q:"\\text{Soit une suite arithmétique } U_0=1, r=4. \\text{ Calculer } U_3.",sol:"13",rule:"Ajouter la raison r"},
+                {lvl:1,q:"\\text{Soit une suite géométrique } U_0=3, q=2. \\text{ Calculer } U_3.",sol:"24",rule:"U_n = U_0 × q^n"},
+                {lvl:1,q:"\\text{Suite géométrique } U_0=2, q=3. \\text{ Calculer } U_2.",sol:"18",rule:"Multiplier par q"},
+                {lvl:1,q:"\\text{Suite arithmétique } U_0=5, r=2. \\text{ Calculer } U_4.",sol:"13",rule:"U_n=U_0+n×r"},
+                {lvl:1,q:"\\text{Suite arithmétique } U_0=0, r=5. \\text{ Calculer } U_2.",sol:"10",rule:"Formule de base"},
+                {lvl:1,q:"\\text{Suite géométrique } U_0=4, q=2. \\text{ Calculer } U_2.",sol:"16",rule:"U_n = U_0 * q^n"},
+                {lvl:1,q:"\\text{Suite arithmétique } U_0=6, r=1. \\text{ Calculer } U_3.",sol:"9",rule:"Addition de r"},
+                {lvl:1,q:"\\text{Suite géométrique } U_0=1, q=5. \\text{ Calculer } U_2.",sol:"25",rule:"Progression géométrique"},
+                {lvl:1,q:"\\text{Suite arithmétique } U_0=3, r=4. \\text{ Calculer } U_2.",sol:"11",rule:"U_n = U_0 + n*r"},
+                {lvl:2,q:"\\text{Suite définie par } U_{n+1}=U_n+3. \\text{ Nature ?}",sol:"arithmetique",rule:"U_{n+1}=U_n+r"},
+                {lvl:2,q:"\\text{Suite } U_{n+1}=2U_n. \\text{ Quelle est la nature ?}",sol:"geometrique",rule:"U_{n+1}=qU_n"},
+                {lvl:2,q:"\\text{Suite } U_{n+1}=U_n-5. \\text{ Nature ?}",sol:"arithmetique",rule:"La raison est négative"},
+                {lvl:2,q:"\\text{Suite } U_{n+1}=3U_n. \\text{ Nature ?}",sol:"geometrique",rule:"Raison q=3"},
+                {lvl:2,q:"\\text{Suite } U_{n+1}=U_n+1. \\text{ Nature ?}",sol:"arithmetique",rule:"Saut constant de +1"},
+                {lvl:2,q:"\\text{Suite } U_{n+1}=4U_n. \\text{ Nature ?}",sol:"geometrique",rule:"Multiplication par 4"},
+                {lvl:2,q:"\\text{Suite } U_{n+1}=U_n-2. \\text{ Nature ?}",sol:"arithmetique",rule:"r = -2"},
+                {lvl:2,q:"\\text{Suite } U_{n+1}=5U_n. \\text{ Nature ?}",sol:"geometrique",rule:"q = 5"},
+                {lvl:2,q:"\\text{Suite } U_{n+1}=U_n+7. \\text{ Nature ?}",sol:"arithmetique",rule:"Arithmétique r=7"},
+                {lvl:2,q:"\\text{Suite } U_{n+1}=10U_n. \\text{ Nature ?}",sol:"geometrique",rule:"Géométrique q=10"},
+                {lvl:3,q:"\\text{Suite arithmétique } U_0=2, r=3. \\text{ Expression de } U_n.",sol:"2+3n",rule:"Forme explicite"},
+                {lvl:3,q:"\\text{Suite géométrique } U_0=2, q=3. \\text{ Donner } U_n.",sol:"2*3^n",rule:"Forme q^n"},
+                {lvl:3,q:"\\text{Suite } U_{n+1}=U_n+4, U_0=1. \\text{ Donner } U_n.",sol:"1+4n",rule:"Passage récurrence -> explicite"},
+                {lvl:3,q:"\\text{Suite } U_{n+1}=2U_n, U_0=1. \\text{ Donner } U_n.",sol:"2^n",rule:"U_n = U_0 * q^n"},
+                {lvl:3,q:"\\text{Suite } U_{n+1}=3U_n, U_0=2. \\text{ Donner } U_n.",sol:"2*3^n",rule:"Formule géométrique"},
+                {lvl:3,q:"\\text{Suite } U_{n+1}=5U_n, U_0=0. \\text{ Donner } U_n.",sol:"5n",rule:"Cas U_0=0"},
+                {lvl:3,q:"\\text{Suite } U_{n+1}=4U_n, U_0=3. \\text{ Donner } U_n.",sol:"3*4^n",rule:"Formule q^n"},
+                {lvl:3,q:"\\text{Suite } U_{n+1}=U_n-2, U_0=6. \\text{ Donner } U_n.",sol:"6-2n",rule:"Raison négative"},
+                {lvl:3,q:"\\text{Suite } U_{n+1}=5U_n, U_0=1. \\text{ Donner } U_n.",sol:"5^n",rule:"Puissance de 5"},
+                {lvl:3,q:"\\text{Suite } U_{n+1}=U_n+3, U_0=2. \\text{ Donner } U_n.",sol:"2+3n",rule:"Formule arithmétique"}
+            ],
+            limites: [
+                {lvl:1,q:"\\lim_{x \\to +\\infty} x^2.",sol:"+inf",rule:"x² tend vers l'infini"},
+                {lvl:1,q:"\\lim_{x \\to -\\infty} x^2.",sol:"+inf",rule:"Un carré est toujours positif"},
+                {lvl:1,q:"\\lim_{x \\to +\\infty} -x^3.",sol:"-inf",rule:"Puissance impaire et signe moins"},
+                {lvl:1,q:"\\lim_{x \\to 2} (x^2-4).",sol:"0",rule:"Calcul direct"},
+                {lvl:1,q:"\\lim_{x \\to 1} (x+2).",sol:"3",rule:"Substitution"},
+                {lvl:1,q:"\\lim_{x \\to 0} \\frac{1}{x}.",sol:"inf",rule:"Division par zéro"},
+                {lvl:1,q:"\\lim_{x \\to +\\infty} x.",sol:"+inf",rule:"Identité"},
+                {lvl:1,q:"\\lim_{x \\to -\\infty} x.",sol:"-inf",rule:"Identité"},
+                {lvl:1,q:"\\lim_{x \\to 3} (x-3).",sol:"0",rule:"Substitution"},
+                {lvl:1,q:"\\lim_{x \\to 2} (x+1).",sol:"3",rule:"Substitution"},
+                {lvl:2,q:"\\lim_{x \\to +\\infty} \\frac{2x}{x+1}.",sol:"2",rule:"Termes de plus haut degré"},
+                {lvl:2,q:"\\lim_{x \\to +\\infty} \\frac{x}{x^2+1}.",sol:"0",rule:"Dénominateur plus fort"},
+                {lvl:2,q:"\\lim_{x \\to +\\infty} \\frac{x^2}{x+1}.",sol:"+inf",rule:"Numérateur plus fort"},
+                {lvl:2,q:"\\lim_{x \\to 1} \\frac{x^2-1}{x-1}.",sol:"2",rule:"Identité remarquable"},
+                {lvl:2,q:"\\lim_{x \\to 2} \\frac{x^2-4}{x-2}.",sol:"4",rule:"Factorisation"},
+                {lvl:2,q:"\\lim_{x \\to +\\infty} \\frac{3x^2}{x^2+1}.",sol:"3",rule:"Rapport des coefficients"},
+                {lvl:2,q:"\\lim_{x \\to +\\infty} \\frac{x+1}{x}.",sol:"1",rule:"Simplification"},
+                {lvl:2,q:"\\lim_{x \\to +\\infty} \\frac{5x^2}{x}.",sol:"+inf",rule:"Simplification en 5x"},
+                {lvl:2,q:"\\lim_{x \\to -\\infty} \\frac{2x}{x+3}.",sol:"2",rule:"Limite en l'infini"},
+                {lvl:2,q:"\\lim_{x \\to +\\infty} \\frac{x}{2x+1}.",sol:"1/2",rule:"Coefficient 1/2"},
+                {lvl:3,q:"\\lim_{x \\to +\\infty} \\sqrt{x^2+1}.",sol:"+inf",rule:"Racine de l'infini"},
+                {lvl:3,q:"\\lim_{x \\to +\\infty} (\\sqrt{x^2+1}-x).",sol:"0",rule:"Utiliser la quantité conjuguée"},
+                {lvl:3,q:"\\lim_{x \\to 0} \\frac{\\sqrt{x+1}-1}{x}.",sol:"1/2",rule:"Taux d'accroissement ou conjugué"},
+                {lvl:3,q:"\\lim_{x \\to +\\infty} \\frac{\\sqrt{x}}{x}.",sol:"0",rule:"Croissance comparée"},
+                {lvl:3,q:"\\lim_{x \\to +\\infty} \\frac{\\sqrt{x^2+2x}}{x}.",sol:"1",rule:"Factorisation sous la racine"},
+                {lvl:3,q:"\\lim_{x \\to 0} \\frac{x}{\\sqrt{x+1}-1}.",sol:"2",rule:"Inverse du taux d'accroissement"},
+                {lvl:3,q:"\\lim_{x \\to +\\infty} \\frac{x+\\sqrt{x}}{x}.",sol:"1",rule:"Division par x"},
+                {lvl:3,q:"\\lim_{x \\to +\\infty} \\frac{\\sqrt{x}}{x^2}.",sol:"0",rule:"Puissance au dénominateur"},
+                {lvl:3,q:"\\lim_{x \\to +\\infty} \\frac{x^2+\\sqrt{x}}{x^2}.",sol:"1",rule:"Simplification par x²"},
+                {lvl:3,q:"\\lim_{x \\to +\\infty} (\\sqrt{x^2+x}-x).",sol:"1/2",rule:"Quantité conjuguée"}
+            ],
+            derivation: [
+                {lvl:1,q:"f(x)=3x^2. f'(x)=?",sol:"6x",rule:"(x^n)' = n*x^{n-1}"},
+                {lvl:1,q:"f(x)=5x^3. f'(x)=?",sol:"15x^2",rule:"3 * 5 * x^2"},
+                {lvl:1,q:"f(x)=2x^4. f'(x)=?",sol:"8x^3",rule:"4 * 2 * x^3"},
+                {lvl:1,q:"f(x)=4x+2. f'(x)=?",sol:"4",rule:"Dérivée de ax+b"},
+                {lvl:1,q:"f(x)=7x-3. f'(x)=?",sol:"7",rule:"Pente"},
+                {lvl:1,q:"f(x)=6x. f'(x)=?",sol:"6",rule:"Linéaire"},
+                {lvl:1,q:"f(x)=9. f'(x)=?",sol:"0",rule:"Constante"},
+                {lvl:1,q:"f(x)=10x^2. f'(x)=?",sol:"20x",rule:"2 * 10 * x"},
+                {lvl:1,q:"f(x)=8x. f'(x)=?",sol:"8",rule:"Coeff"},
+                {lvl:1,q:"f(x)=12. f'(x)=?",sol:"0",rule:"Constante"},
+                {lvl:2,q:"f(x)=2x^2+3x+1. f'(x)=?",sol:"4x+3",rule:"Somme"},
+                {lvl:2,q:"f(x)=5x^2-4x. f'(x)=?",sol:"10x-4",rule:"Terme par terme"},
+                {lvl:2,q:"f(x)=\\sqrt{x}. f'(x)=?",sol:"1/(2sqrt(x))",rule:"Racine"},
+                {lvl:2,q:"f(x)=x^2+\\sqrt{x}. f'(x)=?",sol:"2x+1/(2sqrt(x))",rule:"Somme x² et racine"},
+                {lvl:2,q:"f(x)=x^3+x. f'(x)=?",sol:"3x^2+1",rule:"Polynôme"},
+                {lvl:2,q:"f(x)=4x^2+x. f'(x)=?",sol:"8x+1",rule:"Somme"},
+                {lvl:2,q:"f(x)=3x^2+2. f'(x)=?",sol:"6x",rule:"Direct"},
+                {lvl:2,q:"f(x)=2x+\\sqrt{x}. f'(x)=?",sol:"2+1/(2sqrt(x))",rule:"Addition"},
+                {lvl:2,q:"f(x)=x^2+x+1. f'(x)=?",sol:"2x+1",rule:"Trinôme"},
+                {lvl:2,q:"f(x)=6x^2+3x. f'(x)=?",sol:"12x+3",rule:"Somme"},
+                {lvl:3,q:"f(x)=x^2(x+1). f'(x)=?",sol:"2x(x+1)+x^2",rule:"(uv)' = u'v + uv'"},
+                {lvl:3,q:"f(x)=\\frac{x}{x+1}. f'(x)=?",sol:"1/(x+1)^2",rule:"(u/v)' = (u'v-uv')/v^2"},
+                {lvl:3,q:"f(x)=(x^2)^3. f'(x)=?",sol:"6x^5",rule:"(u^n)'"},
+                {lvl:3,q:"f(x)=(2x)^3. f'(x)=?",sol:"24x^2",rule:"Composée"},
+                {lvl:3,q:"f(x)=(x+1)^2. f'(x)=?",sol:"2(x+1)",rule:"2u'u"},
+                {lvl:3,q:"f(x)=(x^2+1)^2. f'(x)=?",sol:"2(x^2+1)*2x",rule:"2uu'"},
+                {lvl:3,q:"f(x)=(x+3)^3. f'(x)=?",sol:"3(x+3)^2",rule:"u^n"},
+                {lvl:3,q:"f(x)=\\frac{x^2}{x+1}. f'(x)=?",sol:"(2x(x+1)-x^2)/(x+1)^2",rule:"Quotient"},
+                {lvl:3,q:"f(x)=(x^3+1)^2. f'(x)=?",sol:"2(x^3+1)*3x^2",rule:"Chaîne"},
+                {lvl:3,q:"f(x)=(x^2+x)^2. f'(x)=?",sol:"2(x^2+x)*(2x+1)",rule:"Composée"}
+            ],
+            fonctions: [
+                {lvl:1,q:"f(x)=\\frac{1}{x-1}. \\text{ Asymptote en } x \\to 1 ?",sol:"verticale",rule:"Dénominateur nul"},
+                {lvl:1,q:"f(x)=\\frac{1}{x}. \\text{ Asymptote en } +\\infty ?",sol:"horizontale",rule:"Limite finie"},
+                {lvl:1,q:"f(x)=\\frac{2x+1}{x}. \\text{ Asymptote en } +\\infty ?",sol:"horizontale",rule:"y = 2"},
+                {lvl:1,q:"f(x)=2x+3. \\text{ Type d'asymptote en } +\\infty ?",sol:"oblique",rule:"Affine"},
+                {lvl:1,q:"f(x)=\\frac{1}{x}. \\text{ Asymptote en } 0 ?",sol:"verticale",rule:"x = 0"},
+                {lvl:1,q:"f(x)=\\frac{3x+1}{x}. \\text{ Type } ?",sol:"horizontale",rule:"y = 3"},
+                {lvl:1,q:"f(x)=\\frac{1}{x-2}. \\text{ Asymptote } ?",sol:"verticale",rule:"x = 2"},
+                {lvl:1,q:"f(x)=x+1. \\text{ Asymptote } ?",sol:"oblique",rule:"Droite"},
+                {lvl:1,q:"f(x)=\\frac{5x+2}{x}. \\text{ Asymptote } ?",sol:"horizontale",rule:"Coeff"},
+                {lvl:1,q:"f(x)=\\frac{1}{x^2}. \\text{ Asymptote en } 0 ?",sol:"verticale",rule:"x = 0"},
+                {lvl:2,q:"\\text{Direction de } f(x)=x^2 \\text{ en } +\\infty.",sol:"axe des ordonnees",rule:"Parabole"},
+                {lvl:2,q:"\\text{Étudier } f(x)=\\frac{1}{x} \\text{ en } +\\infty.",sol:"axe des abscisses",rule:"Tend vers 0"},
+                {lvl:2,q:"\\text{Étudier } f(x)=x^2+x \\text{ en } +\\infty.",sol:"axe des ordonnees",rule:"x² domine"},
+                {lvl:2,q:"\\text{Étudier } f(x)=\\frac{x}{x^2+1}.",sol:"axe des abscisses",rule:"Limite 0"},
+                {lvl:2,q:"\\text{Étudier } f(x)=x+\\sqrt{x}.",sol:"oblique",rule:"Direction y = x"},
+                {lvl:2,q:"\\text{Étudier } f(x)=x^3.",sol:"axe des ordonnees",rule:"Croissance"},
+                {lvl:2,q:"\\text{Étudier } f(x)=\\frac{1}{x^2}.",sol:"axe des abscisses",rule:"0"},
+                {lvl:2,q:"\\text{Étudier } f(x)=x+1.",sol:"oblique",rule:"Droite"},
+                {lvl:2,q:"\\text{Étudier } f(x)=\\sqrt{x}.",sol:"axe des ordonnees",rule:"Parabolique"},
+                {lvl:2,q:"\\text{Étudier } f(x)=2x+1.",sol:"oblique",rule:"Droite"},
+                {lvl:3,q:"\\text{Si } f''(x)=2>0. \\text{ Nature de la courbe ?}",sol:"convexe",rule:"f''(x) > 0"},
+                {lvl:3,q:"\\text{Si } f''(x)=-3<0. \\text{ Nature ?}",sol:"concave",rule:"f''(x) < 0"},
+                {lvl:3,q:"\\text{Si } f''(x)=6x. \\text{ Point d'inflexion ?}",sol:"0",rule:"Signe f'' change"},
+                {lvl:3,q:"\\text{Si } f''(x)=x-2. \\text{ Point d'inflexion ?}",sol:"2",rule:"= 0"},
+                {lvl:3,q:"\\text{Si } f''(x)=x. \\text{ Signe pour } x>0 ?",sol:"positif",rule:"Direct"},
+                {lvl:3,q:"\\text{Si } f''(x)=-x. \\text{ Signe pour } x>0 ?",sol:"negatif",rule:"-x"},
+                {lvl:3,q:"\\text{Si } f''(x)=4>0. \\text{ Nature ?}",sol:"convexe",rule:"Positif"},
+                {lvl:3,q:"\\text{Si } f''(x)=-5<0. \\text{ Nature ?}",sol:"concave",rule:"Négatif"},
+                {lvl:3,q:"\\text{Si } f''(x)=2x. \\text{ Point d'inflexion ?}",sol:"0",rule:"Zéro"},
+                {lvl:3,q:"\\text{Si } f''(x)=x+1. \\text{ Point d'inflexion ?}",sol:"-1",rule:"Zero"}
+            ]
+        };
+
+        window.onload = () => {
+            identity.nom = prompt("Ton Nom :") || "Nom_Inconnu";
+            identity.prenom = prompt("Ton Prénom :") || "Eleve";
+            identity.classe = prompt("Ta Classe :") || "1Bac";
+            document.getElementById('infoUser').innerText = `👤 ${identity.prenom} ${identity.nom} | 🏫 ${identity.classe}`;
+            addMsg("bot", `Bonjour ${identity.prenom} ! Je suis ton tuteur iMatrice. Choisis un module et un niveau pour commencer l'entraînement.`);
+        };
+
+        function setModule(key, name) {
+            currentModKey = key;
+            document.getElementById('current-mod').innerText = name;
+            document.getElementById('lvl-picker').style.display = 'flex';
+            addMsg("bot", `Tu as sélectionné : **${name}**. Choisis maintenant ton niveau de difficulté.`);
+        }
+
+        function startLevel(l) {
+            queue = [...exoData[currentModKey].filter(x => x.lvl === l)];
+            // Mélanger les questions
+            queue.sort(() => Math.random() - 0.5);
+            addMsg("bot", `🚀 C'est parti pour le **Niveau ${l}** ! Résous les questions les unes après les autres.`);
+            next();
+        }
+
+        function next() {
+            if (queue.length === 0) {
+                addMsg("bot", "Bravo ! Tu as terminé cette série. Ton score est en cours de sauvegarde.");
+                sendReport();
+                return;
+            }
+            currentQ = queue.shift();
+            const mid = "m" + Date.now();
+            addMsg("bot", `Question : <div class="math-display" id="${mid}"></div>`);
+            katex.render(currentQ.q, document.getElementById(mid), { displayMode: true, throwOnError: false });
+            document.getElementById('rappels-box').innerText = currentQ.rule;
+        }
+
+        document.getElementById('ui').addEventListener('keypress', e => {
+            if (e.key === 'Enter') {
+                let ans = e.target.value.trim().toLowerCase();
+                if (!ans) return;
+                addMsg("user", ans);
+                
+                // Nettoyage basique pour comparaison
+                const cleanUser = ans.replace(/\s/g,"");
+                const cleanSol = currentQ.sol.toLowerCase().replace(/\s/g,"");
+
+                if (cleanUser === cleanSol) {
+                    score += 10;
+                    document.getElementById('xp').innerText = score;
+                    addMsg("bot", "✅ **Excellent !** C'est la bonne réponse.");
+                } else {
+                    addMsg("bot", `❌ **Dommage.** La réponse attendue était : **${currentQ.sol}**`);
+                }
+                e.target.value = "";
+                setTimeout(next, 1000);
+            }
+        });
+
+        function addMsg(type, text) {
+            const flow = document.getElementById('chat-flow');
+            const d = document.createElement('div');
+            d.className = "bubble " + type;
+            d.innerHTML = text;
+            flow.appendChild(d);
+            flow.scrollTop = flow.scrollHeight;
+        }
+
+        function sendReport() {
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...identity, score: score, module: currentModKey })
+            }).then(() => {
+                addMsg("bot", "📊 **Score synchronisé avec succès sur Google Sheets.**");
+            }).catch(e => {
+                console.error(e);
+                addMsg("bot", "⚠️ Erreur lors de la synchronisation. Vérifie ta connexion.");
+            });
+        }
+
+        function sendReportManual() {
+            sendReport();
+            alert("votre rapport est envoyé à votre enseignante Imane BAHA !");
+        }
+    </script>
+</body>
+</html>
